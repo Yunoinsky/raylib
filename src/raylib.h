@@ -74,14 +74,17 @@
 #ifndef RAYLIB_H
 #define RAYLIB_H
 
-#include <stdarg.h>                             // Required for: va_list - Only used by TraceLogCallback
+#include <stdarg.h>     // Required for: va_list - Only used by TraceLogCallback
 
-#if defined(_WIN32) && defined(BUILD_LIBTYPE_SHARED)
-    #define RLAPI __declspec(dllexport)         // We are building raylib as a Win32 shared library (.dll)
-#elif defined(_WIN32) && defined(USE_LIBTYPE_SHARED)
-    #define RLAPI __declspec(dllimport)         // We are using raylib as a Win32 shared library (.dll)
-#else
-    #define RLAPI   // We are building or using raylib as a static library (or Linux shared library)
+#define RLAPI           // We are building or using raylib as a static library (or Linux shared library)
+
+#if defined(_WIN32)
+    // Microsoft attibutes to tell compiler that symbols are imported/exported from a .dll
+    #if defined(BUILD_LIBTYPE_SHARED)
+        #define RLAPI __declspec(dllexport)     // We are building raylib as a Win32 shared library (.dll)
+    #elif defined(USE_LIBTYPE_SHARED)
+        #define RLAPI __declspec(dllimport)     // We are using raylib as a Win32 shared library (.dll)
+    #endif
 #endif
 
 //----------------------------------------------------------------------------------
@@ -102,6 +105,9 @@
 #endif
 #ifndef RL_CALLOC
     #define RL_CALLOC(n,sz)     calloc(n,sz)
+#endif
+#ifndef RL_REALLOC
+    #define RL_REALLOC(n,sz)    realloc(n,sz)
 #endif
 #ifndef RL_FREE
     #define RL_FREE(p)          free(p)

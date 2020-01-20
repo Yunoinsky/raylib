@@ -64,13 +64,15 @@
 #if defined(RLGL_STANDALONE)
     #define RAYMATH_STANDALONE
     #define RAYMATH_HEADER_ONLY
+    
+    #define RLAPI   // We are building or using rlgl as a static library (or Linux shared library)
 
-    #if defined(_WIN32) && defined(BUILD_LIBTYPE_SHARED)
-        #define RLAPI __declspec(dllexport)         // We are building raylib as a Win32 shared library (.dll)
-    #elif defined(_WIN32) && defined(USE_LIBTYPE_SHARED)
-        #define RLAPI __declspec(dllimport)         // We are using raylib as a Win32 shared library (.dll)
-    #else
-        #define RLAPI   // We are building or using raylib as a static library (or Linux shared library)
+    #if defined(_WIN32)
+        #if defined(BUILD_LIBTYPE_SHARED)
+            #define RLAPI __declspec(dllexport)         // We are building raylib as a Win32 shared library (.dll)
+        #elif defined(USE_LIBTYPE_SHARED)
+            #define RLAPI __declspec(dllimport)         // We are using raylib as a Win32 shared library (.dll)
+        #endif
     #endif
 
     // Allow custom memory allocators
@@ -79,6 +81,9 @@
     #endif
     #ifndef RL_CALLOC
         #define RL_CALLOC(n,sz)     calloc(n,sz)
+    #endif
+    #ifndef RL_REALLOC
+        #define RL_REALLOC(n,sz)    realloc(n,sz)
     #endif
     #ifndef RL_FREE
         #define RL_FREE(p)          free(p)
@@ -4480,7 +4485,7 @@ static int GenerateMipmaps(unsigned char *data, int baseWidth, int baseHeight)
     TraceLog(LOG_DEBUG, "Total mipmaps required: %i", mipmapCount);
     TraceLog(LOG_DEBUG, "Total size of data required: %i", size);
 
-    unsigned char *temp = realloc(data, size);
+    unsigned char *temp = RL_REALLOC(data, size);
 
     if (temp != NULL) data = temp;
     else TraceLog(LOG_WARNING, "Mipmaps required memory could not be allocated");
